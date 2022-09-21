@@ -1,18 +1,13 @@
-use aws_config::meta::region::RegionProviderChain;
-use aws_sdk_s3::{Client, Error};
+use aws_gardener::{AwsError, S3};
 
 #[tokio::main]
-async fn main() -> Result<(), Error> {
-    let region_provider = RegionProviderChain::default_provider().or_else("eu-west-1");
-    let config = aws_config::from_env().region(region_provider).load().await;
-    let client = Client::new(&config);
-
-    let response = client.list_buckets().send().await?;
-    let buckets = response.buckets().unwrap();
+async fn main() -> Result<(), AwsError> {
+    let s3 = S3::new().await;
+    let buckets = s3.list_buckets().await?;
 
     println!("Buckets:");
-    for thing in buckets {
-        println!("  {}", thing.name().unwrap());
+    for bucket in &buckets {
+        println!("  {}", bucket.name);
     }
     println!();
     println!("Found {} buckets", buckets.len());
