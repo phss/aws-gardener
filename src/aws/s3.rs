@@ -35,3 +35,22 @@ impl S3 {
         Ok(buckets)
     }
 }
+
+#[cfg(test)]
+mod test {
+    use crate::aws::s3::Bucket;
+
+    #[test]
+    fn bucket_from_s3_model_bucket() {
+        let s3_bucket = aws_sdk_s3::model::Bucket::builder()
+            .set_name(Some("some-bucket".into()))
+            .build();
+        assert_eq!(Bucket::from(&s3_bucket).name, "some-bucket");
+    }
+
+    #[test]
+    fn bucket_from_s3_model_bucket_with_no_name() {
+        let s3_bucket = aws_sdk_s3::model::Bucket::builder().set_name(None).build();
+        assert_eq!(Bucket::from(&s3_bucket).name, "");
+    }
+}
