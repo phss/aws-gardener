@@ -1,4 +1,4 @@
-use aws_gardener::aws::{errors::AwsError, s3::S3};
+use aws_gardener::aws::{errors::AwsError, S3};
 
 #[tokio::main]
 async fn main() -> Result<(), AwsError> {

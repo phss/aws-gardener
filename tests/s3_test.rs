@@ -1,4 +1,4 @@
-use aws_gardener::aws::s3::S3;
+use aws_gardener::aws::S3;
 use tokio::net::TcpSocket;
 
 #[tokio::test]
