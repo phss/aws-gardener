@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  localstack:
+    container_name: "localstack-for-integration-tests"
+    image: localstack/localstack
+    ports:
+      - "4566:4566"            # LocalStack Gateway
+      - "4510-4559:4510-4559"  # external services port range
+    environment:
+      - SERVICES=s3
+      - DATA_DIR=/var/lib/localstack/data
+      - LS_LOG=info
+    volumes:
+      - '~/.localstack:/var/lib/localstack'
+      - './bootstrap_aws_resources.sh:/docker-entrypoint-initaws.d/bootstrap.sh'
+      - '/var/run/docker.sock:/var/run/docker.sock'

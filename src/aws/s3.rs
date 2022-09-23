@@ -1,5 +1,6 @@
 use aws_config::meta::region::RegionProviderChain;
-use aws_sdk_s3::Client;
+use aws_sdk_s3::{Client, Endpoint};
+use http::Uri;
 
 use super::errors::AwsError;
 
@@ -23,7 +24,18 @@ impl S3 {
     pub async fn new() -> Self {
         let region_provider = RegionProviderChain::default_provider().or_else("eu-west-1");
         let config = aws_config::from_env().region(region_provider).load().await;
-        let client = Client::new(&config);
+        let client = aws_sdk_s3::Client::new(&config);
+        S3 { client }
+    }
+
+    pub async fn new_for_localstack() -> Self {
+        let region_provider = RegionProviderChain::default_provider().or_else("eu-west-1");
+        let config = aws_config::from_env().region(region_provider).load().await;
+        let mut s3_config_builder = aws_sdk_s3::config::Builder::from(&config);
+        s3_config_builder = s3_config_builder.endpoint_resolver(Endpoint::immutable(
+            Uri::from_static("http://localhost:4566/"),
+        ));
+        let client = aws_sdk_s3::Client::from_conf(s3_config_builder.build());
         S3 { client }
     }
 
